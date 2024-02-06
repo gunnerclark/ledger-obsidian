@@ -58,7 +58,11 @@ const Tree: React.FC<{
       const newSelected = [...props.selectedAccounts, id];
       if (
         props.txCache.assetAccounts.contains(id) ||
-        props.txCache.liabilityAccounts.contains(id)
+        props.txCache.liabilityAccounts.contains(id) ||
+        props.txCache.assetAccounts.filter((x) => x.split(':')[0] === id)
+          .length > 0 ||
+        props.txCache.liabilityAccounts.filter((x) => x.split(':')[0] === id)
+          .length > 0
       ) {
         props.setSelectedAccounts(
           deselectRowsWithoutPrefix(newSelected, [
@@ -68,7 +72,11 @@ const Tree: React.FC<{
         );
       } else if (
         props.txCache.expenseAccounts.contains(id) ||
-        props.txCache.incomeAccounts.contains(id)
+        props.txCache.incomeAccounts.contains(id) ||
+        props.txCache.expenseAccounts.filter((x) => x.split(':')[0] === id)
+          .length > 0 ||
+        props.txCache.incomeAccounts.filter((x) => x.split(':')[0] === id)
+          .length > 0
       ) {
         props.setSelectedAccounts(
           deselectRowsWithoutPrefix(newSelected, [
