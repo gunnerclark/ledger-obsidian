@@ -8,6 +8,11 @@ export type ChartData = {
   y: number;
 }[];
 
+export type PieData = {
+  account: string;
+  balance: number;
+}[];
+
 const calcNetWorth = (
   balanceData: Map<string, number>,
   settings: ISettings,
@@ -81,6 +86,34 @@ export const makeDeltaData = (
     }, 0);
 
     return { x: bucket, y: balance };
+  });
+};
+
+/**
+ * makePercentData creates a list of data points representing the change in
+ * balance of an account between the provided buckets.
+ */
+export const makePercentData = (
+  dailyAccountBalanceMap: Map<string, Map<string, number>>,
+  bucketBefore: string,
+  bucketNames: string[],
+  account: string,
+  allAccounts: string[],
+): PieData => {
+  let totalBalance;
+  const accounts = [...findChildAccounts(account, allAccounts), account];
+  return bucketNames.map((bucket, i) => {
+    const prevBucket = i === 0 ? bucketBefore : bucketNames[i - 1];
+    const accountBalances = dailyAccountBalanceMap.get(bucket);
+    const prevAccountBalances = dailyAccountBalanceMap.get(prevBucket);
+
+    const bal = accounts.reduce((prev, currentAccount) => {
+      const b1 = prevAccountBalances?.get(currentAccount) || 0;
+      const b2 = accountBalances?.get(currentAccount) || 0;
+      return b2 - b1 + prev;
+    }, 0);
+
+    return { account, balance: bal };
   });
 };
 
